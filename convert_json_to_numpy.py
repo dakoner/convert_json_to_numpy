@@ -2,8 +2,9 @@ import json
 import numpy
 import time
 import datetime
-INT_FILL_VALUE=999999
-FLOAT_FILL_VALUE=1e+20
+
+INT_FILL_VALUE = 999999
+FLOAT_FILL_VALUE = 1e+20
 
 datetime_format = 'datetime64[us]'
 fields = [
@@ -26,9 +27,10 @@ for field in fields:
     elif field[1] == numpy.float:
         fill_values.append(FLOAT_FILL_VALUE)
 
+
 def convert_json_to_numpy(data):
     data2 = []
-    mask=[]
+    mask = []
     for item in data["weatherdata"]:
         newitem = []
         itemmask = []
@@ -51,11 +53,16 @@ def convert_json_to_numpy(data):
         data2.append(newitem)
     return numpy.ma.array(data2, mask=mask)
 
+
 if __name__ == '__main__':
     f = open("c:/Users/dek/Projects/d3webview/app/src/main/assets/static_html/foo.json")
     data = json.load(f)
     n = convert_json_to_numpy(data)
-    print(n[:10])
+    n = n[:1000]
 
+    indices = numpy.ma.where(n["uuid"] == 1)
+    r = n[indices[0]]
+    print(r[:10])
     import code
+
     code.interact(local=locals())
