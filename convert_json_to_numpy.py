@@ -1,11 +1,13 @@
 import json
 import numpy
-
-
+import time
+import datetime
 INT_FILL_VALUE=999999
 FLOAT_FILL_VALUE=1e+20
+
+datetime_format = 'datetime64[us]'
 fields = [
-    ("created_at", object),
+    ("created_at", datetime_format),
     ("uuid", numpy.int),
     ("rssi", numpy.int),
     ("wind_direction", numpy.float),
@@ -32,7 +34,11 @@ def convert_json_to_numpy(data):
         itemmask = []
         for field in fields:
             if field[0] in item:
-                newitem.append(item[field[0]])
+                if field[1] == datetime_format:
+                    p = time.strptime(item[field[0]], "%a, %d %b %Y %H:%M:%S -0000")
+                    newitem.append(datetime.datetime(*p[:6]))
+                else:
+                    newitem.append(item[field[0]])
                 itemmask.append(0)
             else:
                 if field[1] == numpy.int:
@@ -41,12 +47,15 @@ def convert_json_to_numpy(data):
                     newitem.append(FLOAT_FILL_VALUE)
                 itemmask.append(1)
         mask.append(tuple(itemmask))
-        data2.append(numpy.array([tuple(newitem)], dtype=numpy.dtype(fields)))
-        return numpy.ma.array(data2, mask=mask)
+        newitem = numpy.array([tuple(newitem)], dtype=numpy.dtype(fields))
+        data2.append(newitem)
+    return numpy.ma.array(data2, mask=mask)
 
 if __name__ == '__main__':
     f = open("c:/Users/dek/Projects/d3webview/app/src/main/assets/static_html/foo.json")
     data = json.load(f)
     n = convert_json_to_numpy(data)
+    print(n[:10])
+
     import code
     code.interact(local=locals())
