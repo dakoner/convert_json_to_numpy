@@ -49,7 +49,7 @@ def convert_json_to_numpy(data):
                     newitem.append(FLOAT_FILL_VALUE)
                 itemmask.append(1)
         mask.append(tuple(itemmask))
-        newitem = numpy.array([tuple(newitem)], dtype=numpy.dtype(fields))
+        newitem = numpy.array(tuple(newitem), dtype=numpy.dtype(fields))
         data2.append(newitem)
     return numpy.ma.array(data2, mask=mask)
 
@@ -58,11 +58,14 @@ if __name__ == '__main__':
     f = open("c:/Users/dek/Projects/d3webview/app/src/main/assets/static_html/foo.json")
     data = json.load(f)
     n = convert_json_to_numpy(data)
-    n = n[:1000]
-
     indices = numpy.ma.where(n["uuid"] == 1)
     r = n[indices[0]]
-    print(r[:10])
+    d = r['created_at'].copy()
+    ## find largest skip in time.
+    d.sort()
+    t=numpy.diff(d)
+    t.sort()
+    print(t)
     import code
 
     code.interact(local=locals())
