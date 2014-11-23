@@ -27,7 +27,7 @@ for field in fields:
 def convert_json_to_numpy(data):
     data2 = []
     mask=[]
-    for item in data["weatherdata"][:1]:
+    for item in data["weatherdata"]:
         newitem = []
         itemmask = []
         for field in fields:
@@ -48,4 +48,5 @@ if __name__ == '__main__':
     f = open("c:/Users/dek/Projects/d3webview/app/src/main/assets/static_html/foo.json")
     data = json.load(f)
     n = convert_json_to_numpy(data)
-    import pdb; pdb.set_trace()
+    import code
+    code.interact(local=locals())
