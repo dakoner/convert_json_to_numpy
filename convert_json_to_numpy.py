@@ -58,14 +58,25 @@ if __name__ == '__main__':
     f = open("c:/Users/dek/Projects/d3webview/app/src/main/assets/static_html/foo.json")
     data = json.load(f)
     n = convert_json_to_numpy(data)
-    indices = numpy.ma.where(n["uuid"] == 1)
-    r = n[indices[0]]
-    d = r['created_at'].copy()
-    ## find largest skip in time.
-    d.sort()
-    t=numpy.diff(d)
-    t.sort()
-    print(t)
-    import code
+    ## TODO(dek): get the set of unique uuids
+    ## Create minute bins
+    n2=numpy.unique(numpy.array(n["created_at"], 'datetime64[m]'))
+    for d in n2[:1000]:
+        c = numpy.array(d, 'datetime64[m]')
+        ## Each array contains the indices of records whose created_at matches this minute bin
+        print(numpy.ma.where(numpy.array(n["created_at"],'datetime64[m]') == c))
+        ## group records by uuid
+        ## for each group, if it's got 0 records, fill in empty record
+        ## if its got > 1 record, average them
 
+    #numpy.ma.unique(n, return_counts=True)
+    #indices = numpy.ma.where(n["uuid"] == 1)
+    #r = n[indices[0]]
+    #d = r['created_at'].copy()
+    ## find largest skip in time.
+    #d.sort()
+    #t=numpy.diff(d)
+    #t.sort()
+    #print(t)
+    import code
     code.interact(local=locals())
