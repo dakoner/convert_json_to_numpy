@@ -10,7 +10,6 @@ data = json.load(open(path))
 d = pandas.io.json.json_normalize(data["weatherdata"])
 d["collected_at"] = pandas.to_datetime(d["collected_at"])
 d["created_at"] = pandas.to_datetime(d["created_at"])
-d.set_index(d["created_at"])
 # Can't be serialized due to differing dtypes.
 d.drop("raw", 1, inplace=True)
 d.drop("version", 1, inplace=True)

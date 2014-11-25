@@ -15,7 +15,6 @@ d2 = store.get('data')
 store.close()
 
 
-d2 = pandas.read_hdf(path, 'data')
 # d2 = d2.drop('Unnamed: 0', 1)
 
 # x = d2.loc[:, ['outside_temp']]
@@ -28,6 +27,7 @@ d2 = pandas.read_hdf(path, 'data')
 # d2[['outside_temp', 'uuid']].to_csv(
 #     'c:/Users/dek/Desktop/test2.csv', na_rep='NaN')
 
+d2.set_index(d2['created_at'])
 
 pandas.set_option('display.width', None)
 import code
