@@ -3,19 +3,16 @@ import pandas
 import os
 import pandas
 import json
-
-base = '/usr/local/google/home/dek/d3webview/app/src/main/assets/static_html'
+src = "c:/Users/dek/Projects"
+base = os.path.join(src, "d3webview/app/src/main/assets/static_html")
 path = os.path.join(base, 'example_weather.hf5')
 
 store = pandas.HDFStore(path)
 
-for item in store.items():
-  print item
 d2 = store.get('data')
 store.close()
 
 
-d2 = pandas.read_hdf(path, 'data')
 # d2 = d2.drop('Unnamed: 0', 1)
 
 # x = d2.loc[:, ['outside_temp']]
@@ -29,6 +26,6 @@ d2 = pandas.read_hdf(path, 'data')
 #     'c:/Users/dek/Desktop/test2.csv', na_rep='NaN')
 
 
-pandas.set_option('display.width', None)
+pandas.set_option('display.width', 235)
 import code
 code.interact(local=locals())
