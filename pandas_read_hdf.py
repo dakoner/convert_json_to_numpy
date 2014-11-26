@@ -3,7 +3,7 @@ import pandas
 import os
 import pandas
 from matplotlib import pyplot
-
+pd.options.display.mpl_style = 'default'
 
 src = "c:/Users/dek/Projects"
 base = os.path.join(src, "d3webview/app/src/main/assets/static_html")
