@@ -3,7 +3,7 @@ import pandas
 import os
 import pandas
 from matplotlib import pyplot
-pd.options.display.mpl_style = 'default'
+pandas.options.display.mpl_style = 'default'
 
 src = "c:/Users/dek/Projects"
 base = os.path.join(src, "d3webview/app/src/main/assets/static_html")
@@ -12,7 +12,8 @@ path = os.path.join(base, 'example_weather.hf5')
 store = pandas.HDFStore(path)
 
 d2 = store.get('data')
-store.close()
+#store.select('data', "index >= '2014-11-25'")
+#store.close()
 
 
 # d2 = d2.drop('Unnamed: 0', 1)
@@ -33,12 +34,10 @@ store.close()
 #u3=d2[d2['uuid']==3][['uuid','outside_temp']].resample('5Min');u3['uuid']=3
 #pandas.concat([u1, u3]).sort_index()
 
-x=d2[['created_at','uuid','outside_temp']]
-y=x.pivot_table(index = 'created_at', columns='uuid').resample('5Min')
-
-#pyplot.figure()
-y.plot()
-pyplot.show()
+#x=d2[['created_at','uuid','outside_temp']]
+#y=x.pivot_table(index = 'created_at', columns='uuid').resample('5Min')
+#y.plot()
+#pyplot.show()
 
 pandas.set_option('display.width', 235)
 import code
