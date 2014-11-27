@@ -2,12 +2,13 @@ import pandas
 
 import os
 import pandas
-from matplotlib import pyplot
-pandas.options.display.mpl_style = 'default'
+#from matplotlib import pyplot
+#pandas.options.display.mpl_style = 'default'
 
 src = "c:/Users/dek/Projects"
 base = os.path.join(src, "d3webview/app/src/main/assets/static_html")
 path = os.path.join(base, 'example_weather.hf5')
+output = os.path.join(base, 'test/example_weather.json')
 
 store = pandas.HDFStore(path)
 
@@ -34,11 +35,17 @@ d2 = store.get('data')
 #u3=d2[d2['uuid']==3][['uuid','outside_temp']].resample('5Min');u3['uuid']=3
 #pandas.concat([u1, u3]).sort_index()
 
-#x=d2[['created_at','uuid','outside_temp']]
+#variable = 'rssi'
+#x=d2[['created_at', 'uuid', variable]]
+#x=x.rename(columns={variable:'variable'})
+#x.to_json(output,orient="records")
 #y=x.pivot_table(index = 'created_at', columns='uuid').resample('5Min')
 #y.plot()
 #pyplot.show()
 
-pandas.set_option('display.width', 235)
+#plot histogram of pressure values, grouped by UUID
+d2[d2["pressure"].notnull()][["uuid","pressure"]].hist(column="pressure",by="uuid")
+
+pandas.set_option('display.width', 240)
 import code
 code.interact(local=locals())
