@@ -5,7 +5,7 @@ import numpy
 #src = "/usr/local/google/home/dek/d3webview"
 src = "c:/Users/dek/Projects"
 base = os.path.join(src, "d3webview/app/src/main/assets/static_html")
-path = os.path.join(base, "example_weather.json")
+path = os.path.join(base, "test/example_weather.json")
 hdf_output = os.path.join(base, "example_weather.hf5")
 
 data = json.load(open(path))
@@ -16,6 +16,6 @@ d.set_index(d["created_at"], inplace=True)
 # Can't be serialized due to differing dtypes.
 d.drop("raw", 1, inplace=True)
 d.drop("version", 1, inplace=True)
-store = pandas.HDFStore(hdf_output, mode="w")
+store = pandas.HDFStore(hdf_output, mode="a")
 store.put("data", d, format="table")
 store.close()
