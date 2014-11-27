@@ -2,8 +2,8 @@ import os
 import pandas
 import json
 import numpy
-#src = "/usr/local/google/home/dek/d3webview"
-src = "c:/Users/dek/Projects"
+src = "/home/dek"
+#src = "c:/Users/dek/Projects"
 base = os.path.join(src, "d3webview/app/src/main/assets/static_html")
 path = os.path.join(base, "example_weather.json")
 hdf_output = os.path.join(base, "example_weather.hf5")
