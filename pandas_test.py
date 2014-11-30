@@ -19,19 +19,18 @@ p = pandas.concat(data)
 
 p.set_index(p["created_at"], inplace=True)
 p.sort_index()
-var = 'pressure'
+for var in 'pressure', 'outside_temp':
+    # station = 1337
+    # p2 = p[p['station.uuid'] == station]
+    # p3 = p2[[var]]
 
-# station = 1337
-# p2 = p[p['station.uuid'] == station]
-# p3 = p2[[var]]
+    p2 = p[['created_at', 'station.uuid', var, 'us_units']]
+    p2=p2.dropna(axis=0)
+    p2.to_csv("%s.csv" % var)
+    # p3 = p2.groupby(level=0)
+    # p4 = p3.last()
+    # p5 = p4.pivot('created_at', 'station.uuid', var)
+    # p5.plot()
 
-p1 = p['2014-11-27':]
-p2 = p1[['created_at', 'station.uuid', var]]
-p3 = p2.groupby(level=0)
-p4 = p3.last()
-print p4
-p5 = p4.pivot('created_at', 'station.uuid', var)
-p5.plot()
-
-import code
-code.interact(local=locals())
+# import code
+# code.interact(local=locals())
