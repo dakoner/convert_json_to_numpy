@@ -59,8 +59,6 @@ for station in stations:
         pass
 
 store.close()
-
-
 # #src = "c:/Users/dek/Projects"
 # #base = os.path.join(src, "d3webview/app/src/main/assets/static_html")
 # #path = os.path.join(base, "test/example_weather.json")

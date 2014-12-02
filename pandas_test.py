@@ -11,9 +11,9 @@ print store
 
 data = []
 for key in store.keys():
-    d = store.get(key)
-    k= key[10:]
-    data.append(d)
+  d = store.get(key)
+  k = key[10:]
+  data.append(d)
 
 p = pandas.concat(data)
 
@@ -32,6 +32,18 @@ for var in [ 'outside_temp', 'pressure', 'rssi', 'wind_direction', 'recv_packets
     # p4 = p3.last()
     # p5 = p4.pivot('created_at', 'station.uuid', var)
     # p5.plot()
+
+# station = 1337
+# p2 = p[p['station.uuid'] == station]
+# p3 = p2[[var]]
+
+# p1 = p['2014-11-27':]
+# p2 = p1[['created_at', 'station.uuid', var]]
+# p3 = p2.groupby(level=0)
+# p4 = p3.last()
+# print p4
+# p5 = p4.pivot('created_at', 'station.uuid', var)
+# p5.plot()
 
 import code
 code.interact(local=locals())

@@ -29,6 +29,7 @@ d2 = store.get('data')
 # d2[['outside_temp', 'uuid']].to_csv(
 #     'c:/Users/dek/Desktop/test2.csv', na_rep='NaN')
 
+d2.set_index(d2['created_at'])
 
 ## This will resample two stations at 5Min interval, then merge the resampled.
 #u1=d2[d2['uuid']==1][['uuid','outside_temp']].resample('5Min');u1['uuid']=1
