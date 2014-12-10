@@ -50,12 +50,7 @@ for station in stations:
   requests.append(request)
   request.start()
 
+# Uncomment the following line to make the operation run in parallel.
+
 # for i in range(len(stations)):
   r = q.get()
-
-# #src = "c:/Users/dek/Projects"
-# #base = os.path.join(src, "d3webview/app/src/main/assets/static_html")
-# #path = os.path.join(base, "test/example_weather.json")
-
-import code
-code.interact(local=locals())
