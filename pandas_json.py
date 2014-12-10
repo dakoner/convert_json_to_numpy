@@ -1,64 +1,58 @@
+import Queue
 import os
 import pandas
 import json
 import numpy
 import urllib
+import threading
 from matplotlib import pyplot
 
-vars = "wind_direction", "outside_humidity", "outside_temp", "inside_temp","pressure","daily_rain","heatindex","barometer","rain","hourly_rain","inside_humidity","altimeter","wind_gust","wind_gust_direction","windchill","total_rain","dewpoint", "rain_rate", "solar_wm2", "uv_index"
-
-def get_data(json_data):
-    d = pandas.io.json.json_normalize(json_data["weatherdata"])
-    d["collected_at"] = pandas.to_datetime(d["collected_at"])
-    d["created_at"] = pandas.to_datetime(d["created_at"])
-    for var in vars:
-        d[var] = d[var].astype(float)
-    d.drop("raw", 1, inplace=True)
-    d.drop("version", 1, inplace=True)
-#    d.set_index(d["created_at"], inplace=True)
-
-    return d
-
-def store_data(hdf_output, data):
-    store = pandas.HDFStore(hdf_output, mode="a")
-    store.put("data", data, format="table")
-    store.close()
+# vars = (
+#     "wind_direction", "outside_humidity", "outside_temp", "inside_temp",
+#     "pressure", "daily_rain", "heatindex", "barometer", "rain", "hourly_rain",
+#     "inside_humidity", "altimeter", "wind_gust", "wind_gust_direction",
+#     "windchill", "total_rain", "dewpoint", "rain_rate", "solar_wm2",
+#     "uv_index")
 
 
-# url = "http://goosci-outreach.appspot.com/weather/%s" % 202481588171316
-# response = urllib.urlopen(url)
-# json_data = json.loads(response.read())
-# data=get_data(json_data)
+class RequestThread(threading.Thread):
+
+  def __init__(self, station, q):
+    threading.Thread.__init__(self)
+    self.station = station
+    self.q = q
+
+  def run(self):
+    url = "http://goosci-outreach.appspot.com/weather/%s" % station
+    filename = "%s.json" % station
+    print "Reading response from station", station
+    urllib.urlretrieve(url, filename)
+    print "Response read from station", station
+    with open(filename) as f:
+      response = "".join(line for line in f)
+    self.q.put((self.station, response))
 
 
+# TODO(dek): make sure this doesn't append the same dataset over and over
 
 url = "http://goosci-outreach.appspot.com/stations"
 response = urllib.urlopen(url)
 json_data = json.loads(response.read())
 
-stations = [station['uuid'] for station in json_data['stations']]
-print stations
+stations = [station["uuid"] for station in json_data["stations"]]
 
-base = os.getcwd()
-hdf_output = os.path.join(base, "example_weather.hf5")
-## TODO(dek): make sure this doesn't append the same dataset over and over
-store = pandas.HDFStore(hdf_output, mode="a")
-
+requests = []
+q = Queue.Queue(len(stations))
 
 for station in stations:
-    print "station", station
-    url = "http://goosci-outreach.appspot.com/weather/%s" % station
-    response = urllib.urlopen(url)
-    r = response.read()
-    open("%s.json" % station, "w").write(r)
-    json_data = json.loads(r)
-    try:
-        data=get_data(json_data)
-        store.put("station/S%s" % station, data)#, format="table")
-    except KeyError:
-        pass
+  print "Requesting station", station
+  request = RequestThread(station, q)
+  requests.append(request)
+  request.start()
 
-store.close()
+# for i in range(len(stations)):
+  r = q.get()
+
 # #src = "c:/Users/dek/Projects"
 # #base = os.path.join(src, "d3webview/app/src/main/assets/static_html")
 # #path = os.path.join(base, "test/example_weather.json")

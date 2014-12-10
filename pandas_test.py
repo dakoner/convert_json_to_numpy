@@ -1,39 +1,46 @@
+import urllib
+import json
 import datetime
 import pandas
 import os
-from matplotlib import pyplot
-pandas.options.display.mpl_style = 'default'
+
+
+def get_data(json_data):
+  d = pandas.io.json.json_normalize(json_data["weatherdata"])
+  d["collected_at"] = pandas.to_datetime(d["collected_at"])
+  d["created_at"] = pandas.to_datetime(d["created_at"])
+  d.drop("raw", 1, inplace=True)
+  d.drop("version", 1, inplace=True)
+  vars = (
+      "wind_direction", "outside_humidity", "outside_temp", "inside_temp",
+      "pressure", "daily_rain", "heatindex", "barometer", "rain", "hourly_rain",
+      "inside_humidity", "altimeter", "wind_gust", "wind_gust_direction",
+      "windchill", "total_rain", "dewpoint", "rain_rate", "solar_wm2",
+      "uv_index")
+  for var in vars:
+    d[var] = d[var].astype(float)
+
+  return d
+
+
+url = "http://goosci-outreach.appspot.com/stations"
+response = urllib.urlopen(url)
+json_data = json.loads(response.read())
+
+stations = [station["uuid"] for station in json_data["stations"]]
 
 base = os.getcwd()
-path = os.path.join(base, 'example_weather.hf5')
-store = pandas.HDFStore(path)
-print store
+hdf_output = os.path.join(base, "example_weather.hf5")
 
-data = []
-for key in store.keys():
-  d = store.get(key)
-  k = key[10:]
-  data.append(d)
+store = pandas.HDFStore(hdf_output, mode="a", complib="zlib", complevel=9)
+for station in stations:
+  f = open("%s.json" % station)
+  value = f.read()
+  try:
+    j = json.loads(value)
+  except ValueError:
+    print "Failed to parse", station
+  data = get_data(j)
 
-p = pandas.concat(data)
-
-p.set_index(p['created_at'], inplace=True)
-p.sort_index()
-for var in 'outside_temp', 'pressure', 'rssi', 'wind_direction', 'recv_packets', 'rain_spoons', 'heatindex', 'inside_humidity', 'inside_temp', 'outside_humidity', 'rain', 'solar_wm2', 'uv_index', 'wind_gust', 'wind_gust_direction', 'wind_speed':
-  p1 = p[['created_at', 'station.uuid', var, 'us_units']]
-  p1.to_json(open(var + '.json', 'w'), orient="records")
-
-# station = 1337
-# p2 = p[p['station.uuid'] == station]
-# p3 = p2[[var]]
-
-# p1 = p['2014-11-27':]
-# p2 = p1[['created_at', 'station.uuid', var]]
-# p3 = p2.groupby(level=0)
-# p4 = p3.last()
-# print p4
-# p5 = p4.pivot('created_at', 'station.uuid', var)
-# p5.plot()
-
-import code
-code.interact(local=locals())
+  store.put("station/S%s" % station, data)  # , format="table")
+store.close()
